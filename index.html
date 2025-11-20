@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaroLingo - Master English & Tagalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.3);
+            height: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .game-status {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+        
+        .agents-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .agent-card.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #f5576c;
+            transform: scale(1.05);
+        }
+        
+        .agent-card.speaking {
+            animation: pulse 1.5s infinite;
+        }
+        
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .agent-icon {
+            font-size: 2.5em;
+        }
+        
+        .agent-info h3 {
+            margin-bottom: 5px;
+        }
+        
+        .agent-status {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .chat-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .message.researcher { border-left: 4px solid #4CAF50; }
+        .message.examiner { border-left: 4px solid #2196F3; }
+        .message.translator { border-left: 4px solid #FF9800; }
+        .message.motivator { border-left: 4px solid #E91E63; }
+        
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pattern-indicator {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+        
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .quiz-option.correct {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .quiz-option.wrong {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 20px 10px rgba(245, 87, 108, 0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 LaroLingo</h1>
+            <p class="tagline">Multi-Agent Language Learning Game</p>
+        </header>
+        
+        <div class="game-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">Level 3: 0/10</div>
+            </div>
+            
+            <div class="game-status">
+                <div class="stat">🔥 Streak: <span id="streak">0</span></div>
+                <div class="stat">⭐ Score: <span id="score">0</span></div>
+                <div class="stat">🎯 Correct: <span id="correct">0</span>/10</div>
+                <div class="stat">🔄 Pattern: <span id="currentPattern">Crew</span></div>
+            </div>
+            
+            <div class="agents-panel">
+                <div class="agent-card" id="researcher">
+                    <div class="agent-header">
+                        <div class="agent-icon">🔍</div>
+                        <div class="agent-info">
+                            <h3>Researcher</h3>
+                            <div class="agent-status">Gathering context...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agent-card" id="examiner">
+                    <div class="agent-header">
+                        <div class="agent-icon">📝</div>
+                        <div class="agent-info">
+                            <h3>Examiner</h3>
+                            <div class="agent-status">Ready to test</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agent-card" id="translator">
+                    <div class="agent-header">
+                        <div class="agent-icon">🌐</div>
+                        <div class="agent-info">
+                            <h3>Translator</h3>
+                            <div class="agent-status">Standing by</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agent-card" id="motivator">
+                    <div class="agent-header">
+                        <div class="agent-icon">⭐</div>
+                        <div class="agent-info">
+                            <h3>Motivator</h3>
+                            <div class="agent-status">Cheering you on!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-area" id="chatArea"></div>
+            
+            <div id="quizArea"></div>
+            
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type your answer or request help from agents..." />
+                <button class="btn" id="submitBtn" onclick="handleSubmit()">Submit</button>
+                <button class="btn" onclick="nextQuestion()">Next Question</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameState = {
+            score: 0,
+            streak: 0,
+            correct: 0,
+            total: 10,
+            currentQuestion: 0,
+            pattern: 'crew',
+            currentAnswer: ''
+        };
+
+        const patterns = ['crew', 'manager-worker', 'debate', 'sequential'];
+        
+        const questions = [
+            {
+                en: "The customer is always right",
+                tl: "Ang customer ay laging tama",
+                options: ["Ang customer ay laging tama", "Ang kliyente ay mali", "Walang customer dito", "Hindi ko alam"],
+                context: "Common call center phrase"
+            },
+            {
+                en: "Please hold the line",
+                tl: "Pakihintay po sa linya",
+                options: ["Pakihintay po sa linya", "Ibaba mo ang linya", "Walang linya", "Tawag ka mamaya"],
+                context: "Customer service standard"
+            },
+            {
+                en: "How may I help you?",
+                tl: "Paano kita matutulungan?",
+                options: ["Paano kita matutulungan?", "Ano gusto mo?", "Wala akong alam", "Umalis ka na"],
+                context: "Polite greeting"
+            },
+            {
+                en: "Thank you for calling",
+                tl: "Salamat sa pagtawag",
+                options: ["Salamat sa pagtawag", "Huwag ka nang tumawag", "Ayoko ng tawag", "Balik ka bukas"],
+                context: "Professional closing"
+            },
+            {
+                en: "I understand your concern",
+                tl: "Nauunawaan ko ang iyong alalahanin",
+                options: ["Nauunawaan ko ang iyong alalahanin", "Hindi kita maintindihan", "Wala akong pakialam", "Bahala ka"],
+                context: "Empathy statement"
+            }
+        ];
+
+        let currentQ = 0;
+
+        function addMessage(agent, text, className = '') {
+            const chatArea = document.getElementById('chatArea');
+            const msg = document.createElement('div');
+            msg.className = `message ${className}`;
+            msg.innerHTML = `
+                <div class="message-header">
+                    ${getAgentIcon(agent)} ${agent}
+                    ${gameState.pattern !== 'crew' ? `<span class="pattern-indicator">${gameState.pattern}</span>` : ''}
+                </div>
+                <div>${text}</div>
+            `;
+            chatArea.appendChild(msg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function getAgentIcon(agent) {
+            const icons = {
+                'Researcher': '🔍',
+                'Examiner': '📝',
+                'Translator': '🌐',
+                'Motivator': '⭐'
+            };
+            return icons[agent] || '🤖';
+        }
+
+        function setAgentActive(agentId) {
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.classList.remove('active', 'speaking');
+            });
+            if (agentId) {
+                const agent = document.getElementById(agentId);
+                agent.classList.add('active', 'speaking');
+            }
+        }
+
+        function updateProgress() {
+            const progress = (gameState.correct / gameState.total) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').textContent = `Level 3: ${gameState.correct}/${gameState.total}`;
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('streak').textContent = gameState.streak;
+            document.getElementById('correct').textContent = gameState.correct;
+        }
+
+        function nextQuestion() {
+            if (currentQ >= questions.length) {
+                currentQ = 0;
+            }
+            
+            const q = questions[currentQ];
+            gameState.currentAnswer = q.tl;
+            
+            // Rotate pattern
+            gameState.pattern = patterns[currentQ % patterns.length];
+            document.getElementById('currentPattern').textContent = gameState.pattern;
+            
+            // Clear quiz area
+            document.getElementById('quizArea').innerHTML = '';
+            document.getElementById('userInput').value = '';
+            
+            // Pattern-specific agent interactions
+            switch(gameState.pattern) {
+                case 'crew':
+                    crewPattern(q);
+                    break;
+                case 'manager-worker':
+                    managerWorkerPattern(q);
+                    break;
+                case 'debate':
+                    debatePattern(q);
+                    break;
+                case 'sequential':
+                    sequentialPattern(q);
+                    break;
+            }
+            
+            currentQ++;
+        }
+
+        function crewPattern(q) {
+            setTimeout(() => {
+                setAgentActive('researcher');
+                addMessage('Researcher', `Context: "${q.context}" - This phrase is commonly used in professional settings.`, 'researcher');
+            }, 500);
+            
+            setTimeout(() => {
+                setAgentActive('examiner');
+                addMessage('Examiner', `Translate to Tagalog: "${q.en}"`, 'examiner');
+                showQuizOptions(q);
+            }, 1500);
+        }
+
+        function managerWorkerPattern(q) {
+            setTimeout(() => {
+                setAgentActive('examiner');
+                addMessage('Examiner', `[Manager] Team, we need to translate: "${q.en}"`, 'examiner');
+            }, 500);
+            
+            setTimeout(() => {
+                setAgentActive('researcher');
+                addMessage('Researcher', `[Worker] I found the context: ${q.context}`, 'researcher');
+            }, 1500);
+            
+            setTimeout(() => {
+                setAgentActive('translator');
+                addMessage('Translator', `[Worker] Here are the options for the student:`, 'translator');
+                showQuizOptions(q);
+            }, 2500);
+        }
+
+        function debatePattern(q) {
+            setTimeout(() => {
+                setAgentActive('translator');
+                addMessage('Translator', `I believe "${q.options[0]}" is the correct translation.`, 'translator');
+            }, 500);
+            
+            setTimeout(() => {
+                setAgentActive('researcher');
+                addMessage('Researcher', `Let me verify... Yes, considering the context "${q.context}", that's accurate.`, 'researcher');
+            }, 1500);
+            
+            setTimeout(() => {
+                setAgentActive('examiner');
+                addMessage('Examiner', `Student, choose the correct translation for: "${q.en}"`, 'examiner');
+                showQuizOptions(q);
+            }, 2500);
+        }
+
+        function sequentialPattern(q) {
+            setTimeout(() => {
+                setAgentActive('researcher');
+                addMessage('Researcher', `Step 1: Analyzing phrase "${q.en}" in context of ${q.context}`, 'researcher');
+            }, 500);
+            
+            setTimeout(() => {
+                setAgentActive('translator');
+                addMessage('Translator', `Step 2: Providing translation options...`, 'translator');
+            }, 1500);
+            
+            setTimeout(() => {
+                setAgentActive('examiner');
+                addMessage('Examiner', `Step 3: Your turn to choose!`, 'examiner');
+                showQuizOptions(q);
+            }, 2500);
+            
+            setTimeout(() => {
+                setAgentActive('motivator');
+                addMessage('Motivator', `Step 4: You got this! Take your time! 💪`, 'motivator');
+            }, 3500);
+        }
+
+        function showQuizOptions(q) {
+            const quizArea = document.getElementById('quizArea');
+            const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+            
+            quizArea.innerHTML = '<div class="quiz-options"></div>';
+            const optionsDiv = quizArea.querySelector('.quiz-options');
+            
+            shuffled.forEach(option => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option, q.tl, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            const allOptions = document.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            if (selected === correct) {
+                btn.classList.add('correct');
+                gameState.correct++;
+                gameState.streak++;
+                gameState.score += 100 + (gameState.streak * 10);
+                
+                setAgentActive('motivator');
+                const encouragement = ['Excellent!', 'Perfect!', 'Tama yan!', 'Galing mo!', 'Keep it up!'];
+                addMessage('Motivator', encouragement[Math.floor(Math.random() * encouragement.length)] + ` +${100 + (gameState.streak * 10)} points! 🎉`, 'motivator');
+            } else {
+                btn.classList.add('wrong');
+                allOptions.forEach(opt => {
+                    if (opt.textContent === correct) opt.classList.add('correct');
+                });
+                gameState.streak = 0;
+                
+                setAgentActive('motivator');
+                addMessage('Motivator', `Not quite, but that's okay! The correct answer is highlighted. Keep learning! 💪`, 'motivator');
+            }
+            
+            updateProgress();
+            
+            setTimeout(() => {
+                setAgentActive(null);
+            }, 2000);
+        }
+
+        function handleSubmit() {
+            const input = document.getElementById('userInput').value.trim();
+            if (!input) return;
+            
+            addMessage('You', input);
+            
+            setAgentActive('translator');
+            setTimeout(() => {
+                addMessage('Translator', `Great question! Let me help you with that translation...`, 'translator');
+            }, 500);
+            
+            document.getElementById('userInput').value = '';
+        }
+
+        // Initialize game
+        updateProgress();
+        addMessage('Motivator', 'Welcome to Level 3! All four agents are ready to help you master English-Tagalog translations! 🚀', 'motivator');
+        setTimeout(() => {
+            addMessage('Examiner', 'Click "Next Question" to begin your multi-agent learning experience!', 'examiner');
+        }, 1000);
+    </script>
+</body>
+</html>
